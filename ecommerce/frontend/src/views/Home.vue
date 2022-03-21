@@ -1,30 +1,29 @@
 <template>
   <div class="home">
     <div>
+      <h1>Products</h1>
       <template>
-        <h1>Listado de productos</h1>
-        <div class="products" style="display: grid; grid-template-columns: 500px 500px; margin-left: 150px;">
-            <div v-for="product, index in products" v-bind:key="index" style="margin-top: 50px; margin-left: 50px;">
-                <div class="imagenYtexto" style="display:flex;">
-                    <div class="imagen" style="margin-left: 20px; margin-top: 15px;">
-                        <img :src="product.mainImage" alt="holaxd" width="250" height="250">
-                    </div>
-                    <div class="nombreYprecio">
-                        <div class="idYnombre" style="text-align: left; margin-left: 20px; margin-top: 15px;">
-                            ID: {{index}} - {{product.name}}
-                        </div>
-                        <div class="descripcion" style="text-align: left; margin-left: 20px; margin-top: 15px;">
-                            {{product.price}}€
-                        </div>
-                    </div>
+        <div>
+          <section class="list">
+            <ul class="products">
+              <li style="width: 310px; display: inline-grid; margin: 20px;"
+                v-for="product in products" :key="product.id" class="product">
+                <img class="image" :src="product.mainImage" alt width="100%" />
+                <p class="name" style="margin-top: 10px;">
+                 {{ product.name }}
+                </p>
+                <p>
+                  <em>${{ product.price }}</em>
+                </p>
+                <div style="display: flex">
+                  <router-link :to="{ name: 'Details', params: { id: product.id } }" style="width: 45%">
+                    <b-button style="width: 90%;">Details</b-button>
+                  </router-link>
+                  <b-button @click="addCart(product.id, product.name, product.price)" style="width: 45%; margin-left: 5%;">Add to cart</b-button>
                 </div>
-                <div class="datos">
-                    <div class="descripcion" style="text-align: justify; margin-left: 20px; margin-top: 15px;">
-                        {{product.description}} <br>
-                    </div>
-                    <b-button @click="addCarrito(product.id, product.name, product.price)">Add</b-button>
-                </div> 
-            </div>
+              </li>
+            </ul>
+          </section>
         </div>
       </template>
     </div>
@@ -36,6 +35,7 @@ import api_url from "../utils/api";
 
 export default {
   name: "Home",
+
   components: {},
   created() {
     fetch(api_url("/products"))
@@ -48,12 +48,13 @@ export default {
     };
   },
   methods: {
-    addCarrito(productId, productName, productPrice) {
+    addCart(productId, productName, productPrice) {
       fetch(api_url("/cart/"), {
         method: "POST",
         body: JSON.stringify({
           productId: productId,
           productName: productName,
+          quantity: 1,
           productPrice: productPrice,
         }),
         headers: {
